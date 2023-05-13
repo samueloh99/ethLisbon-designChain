@@ -13,18 +13,27 @@ const Header = () => {
       <h1 className="cursor-pointer" onClick={() => router.push("/")}>
         Design Chain
       </h1>
-      {isConnected ? (
-        <div className="flex">
-          ✅ Connected to: {truncateAddress(address as string)}
-        </div>
-      ) : (
+      <div className="flex flex-row gap-5 justify-center items-center">
+        {isConnected ? (
+          <div className="flex">
+            ✅ Connected to: {truncateAddress(address as string)}
+          </div>
+        ) : (
+          <button
+            className="bg-btn px-5 py-4 rounded-[18px] flex"
+            onClick={() => router.push("/signup")}
+          >
+            Login
+          </button>
+        )}
+
         <button
-          className="bg-btn px-5 py-4 rounded-[18px] flex"
-          onClick={() => router.push("/signup")}
+          className="border rounded px-2 py-1"
+          onClick={() => router.push("/myprofile")}
         >
-          Login
+          My Profile
         </button>
-      )}
+      </div>
     </div>
   );
 };

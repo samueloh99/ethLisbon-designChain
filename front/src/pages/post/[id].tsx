@@ -17,6 +17,7 @@ interface Comment {
   x: number;
   y: number;
   text: string;
+  reviewId: string;
 }
 
 interface PropsServerSide {
@@ -86,6 +87,7 @@ const Post = ({
       return {
         text: item.comment,
         x: posX,
+        reviewId: item.reviewId,
         y: posY,
       };
     });
@@ -114,7 +116,7 @@ const Post = ({
     const rect = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width; // relative x position
     const y = (event.clientY - rect.top) / rect.height; // relative y position
-    setActiveComment({ x, y, text: "" });
+    setActiveComment({ x, y, text: "", reviewId: "" });
   };
 
   const onCommentChange = (
@@ -167,6 +169,29 @@ const Post = ({
     }
   };
 
+  const handleClickToVote = async (id: string) => {
+    const contract = new Contract(
+      "0x91d7bce52AbC0A8074A3943bd07c9Bf6cF2Ad6BC",
+      abi,
+      data as Signer
+    );
+
+    try {
+      // // Call your contract function
+      const result = await contract.upvoteReview(id);
+
+      if (result.data) {
+        return setIsLoading(false);
+      }
+
+      alert("Voted !");
+      console.log("Function result:", result);
+    } catch (err) {
+      setIsLoading(false);
+      console.error("Error calling the contract function:", err);
+    }
+  };
+
   return (
     <div className="flex flex-col relative border h-full border-white">
       <Header />
@@ -208,7 +233,12 @@ const Post = ({
                   className="flex items-center justify-between align-center bg-gray-600 p-2 rounded text-white"
                 >
                   {comment.text}
-                  <button className="border border-white rounded px-2">
+                  <button
+                    className="border border-white rounded px-2"
+                    onClick={() =>
+                      handleClickToVote(comment.reviewId)
+                    }
+                  >
                     VOTE
                   </button>
                 </div>

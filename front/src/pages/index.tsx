@@ -23,11 +23,11 @@ export default function Home() {
             Upload Design
           </button>
         </div>
-        {/* <UploadDesign
+        <UploadDesign
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-        /> */}
-        {/* <DesignGrid /> */}
+        />
+        <DesignGrid />
       </div>
     </main>
   );

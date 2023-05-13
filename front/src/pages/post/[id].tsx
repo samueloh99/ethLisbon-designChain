@@ -7,7 +7,6 @@ import React, {
   FormEvent,
   useEffect,
 } from "react";
-import { useRouter } from "next/router";
 import axios from "axios";
 import { Contract, Signer, ethers } from "ethers";
 import { useSigner } from "wagmi";
@@ -136,7 +135,7 @@ const Post = ({
     setActiveComment(null);
 
     const contract = new Contract(
-      // contratoAdd
+      "0x91d7bce52AbC0A8074A3943bd07c9Bf6cF2Ad6BC",
       abi,
       data as Signer
     );

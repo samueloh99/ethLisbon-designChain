@@ -88,7 +88,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     const client = makeStorageClient();
     const cid = await client.put(filesToUpload);
 
-    const contract = new Contract(abi, data as Signer);
+    const contract = new Contract(
+      "0x91d7bce52AbC0A8074A3943bd07c9Bf6cF2Ad6BC",
+      abi,
+      data as Signer
+    );
 
     const amountMATIC = ethers.utils.parseEther(form.reward);
 

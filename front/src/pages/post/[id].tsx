@@ -16,6 +16,7 @@ import { abi } from "../../../abi/abi.json";
 interface Comment {
   x: number;
   y: number;
+  upVotes: string;
   text: string;
   reviewId: string;
 }
@@ -43,6 +44,7 @@ interface PropsServerSide {
     __typename: string;
     id: string;
     reviewId: string;
+    upVotes: string;
     reviewer: string;
     designId: string;
     posX: string;
@@ -73,26 +75,27 @@ const Post = ({
   useEffect(() => {
     const scaleFactor = ethers.BigNumber.from(10).pow(5);
 
-    const formattedReviews = reviews.map((item) => {
-      const posXBigNumber = ethers.BigNumber.from(item.posX);
-      const posYBigNumber = ethers.BigNumber.from(item.posY);
+    // const formattedReviews = reviews.map((item) => {
+    //   const posXBigNumber = ethers.BigNumber.from(item.posX);
+    //   const posYBigNumber = ethers.BigNumber.from(item.posY);
 
-      const posX =
-        posXBigNumber.div(scaleFactor).toNumber() +
-        posXBigNumber.mod(scaleFactor).toNumber() / 1e5;
-      const posY =
-        posYBigNumber.div(scaleFactor).toNumber() +
-        posYBigNumber.mod(scaleFactor).toNumber() / 1e5;
+    //   const posX =
+    //     posXBigNumber.div(scaleFactor).toNumber() +
+    //     posXBigNumber.mod(scaleFactor).toNumber() / 1e5;
+    //   const posY =
+    //     posYBigNumber.div(scaleFactor).toNumber() +
+    //     posYBigNumber.mod(scaleFactor).toNumber() / 1e5;
 
-      return {
-        text: item.comment,
-        x: posX,
-        reviewId: item.reviewId,
-        y: posY,
-      };
-    });
+    //   return {
+    //     text: item.comment,
+    //     x: posX,
+    //     upVotes: item.upVotes,
+    //     reviewId: item.reviewId,
+    //     y: posY,
+    //   };
+    // });
 
-    setComments(formattedReviews);
+    setComments([]);
   }, []);
 
   useEffect(() => {
@@ -116,7 +119,7 @@ const Post = ({
     const rect = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width; // relative x position
     const y = (event.clientY - rect.top) / rect.height; // relative y position
-    setActiveComment({ x, y, text: "", reviewId: "" });
+    setActiveComment({ x, y, text: "", reviewId: "", upVotes: "" });
   };
 
   const onCommentChange = (
@@ -137,7 +140,7 @@ const Post = ({
     setActiveComment(null);
 
     const contract = new Contract(
-      "0x91d7bce52AbC0A8074A3943bd07c9Bf6cF2Ad6BC",
+      process.env.NEXT_PUBLIC_CONTRACTADDRESS as string,
       abi,
       data as Signer
     );
@@ -171,7 +174,7 @@ const Post = ({
 
   const handleClickToVote = async (id: string) => {
     const contract = new Contract(
-      "0x91d7bce52AbC0A8074A3943bd07c9Bf6cF2Ad6BC",
+      process.env.NEXT_PUBLIC_CONTRACTADDRESS as string,
       abi,
       data as Signer
     );
@@ -196,7 +199,7 @@ const Post = ({
     <div className="flex flex-col relative border h-full border-white">
       <Header />
       <div className="flex flex-col gap-5 h-full w-full relative border border-white justify-center px-5 py-10">
-        <div className="flex flex-col border border-white w-full">
+        {/* <div className="flex flex-col border border-white w-full">
           <h1>Title: {info.content.title}</h1>
           <h1>Description: {info.content.description}</h1>
           <h1>Reward: {info.content.reward}</h1>
@@ -232,7 +235,10 @@ const Post = ({
                   key={index}
                   className="flex items-center justify-between align-center bg-gray-600 p-2 rounded text-white"
                 >
-                  {comment.text}
+                  <div className="flex border gap-10">
+                    <h1>{comment.text}</h1>
+                    <h1>Votos: {comment.upVotes}</h1>
+                  </div>
                   <button
                     className="border border-white rounded px-2"
                     onClick={() =>
@@ -245,7 +251,7 @@ const Post = ({
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
         {activeComment && (
           <form
             onSubmit={onCommentSubmit}

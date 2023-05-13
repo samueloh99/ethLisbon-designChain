@@ -88,6 +88,12 @@
           "internalType": "address",
           "name": "voter",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "upVotes",
+          "type": "uint256"
         }
       ],
       "name": "ReviewUpvoted",
@@ -297,7 +303,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "votes",
+          "name": "upVotes",
           "type": "uint256"
         }
       ],
@@ -322,7 +328,7 @@
         { "internalType": "uint256", "name": "", "type": "uint256" },
         { "internalType": "address", "name": "", "type": "address" }
       ],
-      "name": "userVotes",
+      "name": "userUpVotes",
       "outputs": [
         { "internalType": "bool", "name": "", "type": "bool" }
       ],

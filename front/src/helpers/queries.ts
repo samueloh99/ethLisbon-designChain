@@ -29,6 +29,7 @@ export const getReviewsByDesignId = gql`
       id
       reviewId
       reviewer
+      upVotes
       designId
       posX
       posY

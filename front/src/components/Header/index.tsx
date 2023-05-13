@@ -11,7 +11,7 @@ const Header = () => {
   return (
     <div className="flex w-full m-auto max-w-5xl items-center justify-between p-5">
       <h1 className="cursor-pointer" onClick={() => router.push("/")}>
-        hackathons project
+        Design Chain
       </h1>
       {isConnected ? (
         <div className="flex">

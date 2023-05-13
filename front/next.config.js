@@ -1,4 +1,7 @@
-/** @type {import('next').NextConfig} */
+const withTM = require("next-transpile-modules")([
+  "@lens-protocol/widgets-react",
+]);
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -8,6 +11,16 @@ const nextConfig = {
       },
     ],
   },
+
+  webpack: (config, options) => {
+    config.module.rules.push({
+      test: /\.js$/,
+      use: [options.defaultLoaders.babel],
+      include: [/node_modules\/@lens-protocol/],
+    });
+
+    return config;
+  },
 };
 
-module.exports = nextConfig;
+module.exports = withTM(nextConfig);

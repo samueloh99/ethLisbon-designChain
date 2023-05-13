@@ -3,6 +3,8 @@ const withTM = require("next-transpile-modules")([
 ]);
 
 const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
   images: {
     remotePatterns: [
       {

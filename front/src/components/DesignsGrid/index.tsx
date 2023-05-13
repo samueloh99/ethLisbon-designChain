@@ -54,11 +54,8 @@ const DesignGrid = () => {
         <h1 className="text-[20px] font-[600]">
           Explore Designs to contribute
         </h1>
-        <div className="flex px-5 md:px-20">
-          <input className="w-full text-white bg-btn border-[0.5px] border-[#ccc] rounded-md py-2 px-5" />
-        </div>
       </div>
-      <div className="flex border w-full px-10 m-auto flex-grow grid md:grid-cols-4 grid-cols-2 gap-4">
+      <div className="flex w-full px-10 m-auto flex-grow grid md:grid-cols-4 grid-cols-2 gap-4">
         {myDesigns.map((item, index) => {
           return <Cards key={index} posts={item} />;
         })}

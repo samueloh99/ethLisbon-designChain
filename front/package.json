@@ -34,6 +34,7 @@
     "nookies": "^2.5.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.8.0",
     "typescript": "5.0.4",
     "wagmi": "0.12.13",
     "web3.storage": "^4.5.4"

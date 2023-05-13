@@ -29,11 +29,20 @@ export const getReviewsByDesignId = gql`
       id
       reviewId
       reviewer
-      upVotes
       designId
       posX
       posY
       comment
+    }
+  }
+`;
+
+export const getUpVotesByReviewId = gql`
+  query GetUpVotesByReviewId($reviewId: ID!) {
+    reviewUpvoteds(where: { reviewId: $reviewId }) {
+      id
+      reviewId
+      upVotes
     }
   }
 `;

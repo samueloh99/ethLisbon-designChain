@@ -14,10 +14,10 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <Header />
-      <div className="flex flex-col justify-center p-5 h-full w-full flex-grow gap-10">
+      <div className="flex flex-col justify-center h-full w-full flex-grow gap-10">
         <div className="flex md:flex-row flex-col text-center justify-center items-center gap-4">
           <button
-            className="bg-btn px-5 py-4 rounded-[18px] flex"
+            className="bg-btn rounded-[18px] px-5 py-3 font-[600]"
             onClick={() => setIsModalOpen(true)}
           >
             Upload Design

@@ -34,16 +34,16 @@ export default function Signup() {
     });
   }
 
-  // const handleProof = useCallback((result: ISuccessResult) => {
-  //   return new Promise<void>((resolve) => {
-  //     setTimeout(() => resolve(), 3000);
-  //     // NOTE: Example of how to decline the verification request and show an error message to the user
-  //   });
-  // }, []);
+  const handleProof = useCallback((result: ISuccessResult) => {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => resolve(), 3000);
+      // NOTE: Example of how to decline the verification request and show an error message to the user
+    });
+  }, []);
 
-  // const onSuccess = async (result: ISuccessResult) => {
-  //   console.log("resultssss", result);
-  // };
+  const onSuccess = async (result: ISuccessResult) => {
+    console.log("resultssss", result);
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -66,7 +66,7 @@ export default function Signup() {
           <h1 className="uppercase font-[600]">
             2. Verify in Worldcoin
           </h1>
-          {/* <IDKitWidget
+          <IDKitWidget
             action="my_action"
             onSuccess={onSuccess}
             handleVerify={handleProof}
@@ -74,7 +74,7 @@ export default function Signup() {
             // walletConnectProjectId="get_this_from_walletconnect_portal"
           >
             {({ open }) => <button onClick={open}>Click me</button>}
-          </IDKitWidget> */}
+          </IDKitWidget>
         </div>
       </div>
     </main>

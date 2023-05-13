@@ -133,47 +133,45 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       <div className="flex items-center justify-center min-h-screen">
         <div
           ref={modalRef}
-          className="flex flex-col justify-center items-center bg-black border-2 border-white rounded-lg w-4/6 md:max-w-full mx-auto h-full shadow-2xl transition-transform duration-300 transform ${
+          className="flex flex-col justify-center h-[800px] items-center bg-white rounded-lg w-full md:w-4/6 md:max-w-full mx-auto h-full shadow-2xl transition-transform duration-300 transform ${
             isOpen ? 'scale-100' : 'scale-90 pointer-events-none'
           }"
         >
           {status.isLoading ? (
             <div className="flex w-full p-10 relative">
-              <div className="p-6 h-full w-full flex flex-col text-white justify-center items-center">
+              <div className="p-6 h-full w-full flex flex-col text-black justify-center items-center">
                 <h1>Loading</h1>
               </div>
             </div>
           ) : (
-            <div className="flex w-full p-10 relative">
+            <div className="flex w-full relative">
               <button
-                className="bg-red-500 w-[40px] text-white font-bold h-[40px] rounded absolute top-10 right-10"
+                className="bg-btn w-[40px] text-black font-bold h-[40px] rounded absolute top-10 right-10"
                 onClick={() => onClose()}
               >
                 X
               </button>
-              <div className="p-6 h-full w-full flex flex-col text-white justify-center items-center">
-                <h2 className="text-2xl font-bold mb-4">
+              <div className="p-6 h-full w-full flex flex-col text-black justify-center items-center">
+                <h1 className="text-[20px] font-[600]">
                   Upload your design
-                </h2>
-                <div className="flex flex-col gap-10 mb-10">
-                  <div className="flex flex-col">
-                    <h1 className="uppercase font-[600]">Title:</h1>
+                </h1>
+                <div className="flex justify-center items-center w-full flex-col mt-10 gap-10 mb-10">
+                  <div className="flex flex-col w-full justify-center items-center">
                     <input
                       type="text"
-                      className="block w-[400px] py-2 px-4 text-sm text-gray-900 border border-gray-300 rounded bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                      placeholder="Title"
+                      className="flex w-full md:w-[400px] py-3 px-4 text-sm text-gray-900 border border-gray-300 rounded bg-gray-200 dark:text-gray-800 focus:outline-none dark:placeholder-gray-800"
                       value={form.title}
                       onChange={(e) =>
                         setForm({ ...form, title: e.target.value })
                       }
                     />
                   </div>
-                  <div className="flex flex-col">
-                    <h1 className="uppercase font-[600]">
-                      Description:
-                    </h1>
+                  <div className="flex flex-col w-full justify-center items-center">
                     <input
+                      placeholder="Description"
                       type="text"
-                      className="block w-[400px] py-2 px-4 text-sm text-gray-900 border border-gray-300 rounded bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                      className="block w-full md:w-[400px] py-3 px-4 text-sm text-gray-900 border border-gray-300 rounded bg-gray-200 dark:text-gray-800 focus:outline-none dark:placeholder-gray-800"
                       value={form.description}
                       onChange={(e) =>
                         setForm({
@@ -183,22 +181,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
                       }
                     />
                   </div>
-                  <div className="flex flex-col">
-                    <h1 className="uppercase font-[600]">
-                      Your Design:
-                    </h1>
+                  <div className="flex flex-col w-full justify-center items-center">
                     <input
                       type="file"
                       onChange={handleFileUpload}
-                      className="block w-[400px] py-2 px-4 text-sm text-gray-900 border border-gray-300 rounded cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                      placeholder="Select a file..."
+                      className="flex w-full md:w-[400px] py-3 px-4 text-sm text-gray-900 border border-gray-300 rounded bg-gray-200 dark:text-gray-800 focus:outline-none dark:placeholder-gray-800"
                     />
                   </div>
-                  <div className="flex flex-col">
-                    <h1 className="uppercase font-[600]">Reward:</h1>
-
+                  <div className="flex flex-col w-full justify-center items-center">
                     <input
                       type="text"
-                      className="block w-[400px] py-2 px-4 text-sm text-gray-900 border border-gray-300 rounded bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                      placeholder="Reward"
+                      className="flex w-full md:w-[400px] py-3 px-4 text-sm text-gray-900 border border-gray-300 rounded bg-gray-200 dark:text-gray-800 focus:outline-none dark:placeholder-gray-800"
                       value={form.reward}
                       onChange={(e) =>
                         setForm({ ...form, reward: e.target.value })
@@ -210,7 +205,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             </div>
           )}
           <button
-            className="bg-btn px-5 py-4 rounded-[18px] flex mb-5"
+            className="bg-btn mb-10 rounded-[18px] px-5 py-3 font-[600]"
             onClick={() => handleUpload()}
           >
             UPLOAD

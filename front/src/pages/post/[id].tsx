@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { GetServerSideProps } from "next";
+import NextImage from "next/image";
 import dynamic from "next/dynamic";
 import React, {
   useState,
@@ -11,7 +12,12 @@ import axios from "axios";
 import { Contract, Signer, ethers } from "ethers";
 import { useSigner } from "wagmi";
 
+import { RiArrowUpSLine } from "react-icons/ri";
+
+import ProfileImage from "../../../public/profile.jpeg";
+
 import { abi } from "../../../abi/abi.json";
+import truncateAddress from "../../helpers/truncateAddress";
 
 interface Comment {
   x: number;
@@ -19,6 +25,7 @@ interface Comment {
   upVotes: string;
   text: string;
   reviewId: string;
+  reviewer: string;
 }
 
 interface PropsServerSide {
@@ -75,27 +82,28 @@ const Post = ({
   useEffect(() => {
     const scaleFactor = ethers.BigNumber.from(10).pow(5);
 
-    // const formattedReviews = reviews.map((item) => {
-    //   const posXBigNumber = ethers.BigNumber.from(item.posX);
-    //   const posYBigNumber = ethers.BigNumber.from(item.posY);
+    const formattedReviews = reviews.map((item) => {
+      const posXBigNumber = ethers.BigNumber.from(item.posX);
+      const posYBigNumber = ethers.BigNumber.from(item.posY);
 
-    //   const posX =
-    //     posXBigNumber.div(scaleFactor).toNumber() +
-    //     posXBigNumber.mod(scaleFactor).toNumber() / 1e5;
-    //   const posY =
-    //     posYBigNumber.div(scaleFactor).toNumber() +
-    //     posYBigNumber.mod(scaleFactor).toNumber() / 1e5;
+      const posX =
+        posXBigNumber.div(scaleFactor).toNumber() +
+        posXBigNumber.mod(scaleFactor).toNumber() / 1e5;
+      const posY =
+        posYBigNumber.div(scaleFactor).toNumber() +
+        posYBigNumber.mod(scaleFactor).toNumber() / 1e5;
 
-    //   return {
-    //     text: item.comment,
-    //     x: posX,
-    //     upVotes: item.upVotes,
-    //     reviewId: item.reviewId,
-    //     y: posY,
-    //   };
-    // });
+      return {
+        text: item.comment,
+        x: posX,
+        upVotes: item.upVotes,
+        reviewId: item.reviewId,
+        reviewer: item.reviewer,
+        y: posY,
+      };
+    });
 
-    setComments([]);
+    setComments(formattedReviews);
   }, []);
 
   useEffect(() => {
@@ -117,9 +125,16 @@ const Post = ({
     event: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width; // relative x position
-    const y = (event.clientY - rect.top) / rect.height; // relative y position
-    setActiveComment({ x, y, text: "", reviewId: "", upVotes: "" });
+    const x = event.clientX - rect.left; // absolute x position
+    const y = event.clientY - rect.top; // absolute y position
+    setActiveComment({
+      x,
+      y,
+      text: "",
+      reviewId: "",
+      upVotes: "",
+      reviewer: "",
+    });
   };
 
   const onCommentChange = (
@@ -181,7 +196,7 @@ const Post = ({
 
     try {
       // // Call your contract function
-      const result = await contract.upvoteReview(id);
+      const result = await contract.upvoreviewsteReview(id);
 
       if (result.data) {
         return setIsLoading(false);
@@ -196,21 +211,16 @@ const Post = ({
   };
 
   return (
-    <div className="flex flex-col relative border h-full border-white">
+    <div className="flex flex-col relative h-full">
       <Header />
-      <div className="flex flex-col gap-5 h-full w-full relative border border-white justify-center px-5 py-10">
-        {/* <div className="flex flex-col border border-white w-full">
-          <h1>Title: {info.content.title}</h1>
-          <h1>Description: {info.content.description}</h1>
-          <h1>Reward: {info.content.reward}</h1>
-        </div>
-        <div className="flex w-full gap-10 relative">
-          <div className="relative w-[800px] m-auto">
+      <div className="flex flex-col gap-5 h-full w-full relative justify-center px-5 py-10">
+        <div className="flex w-full flex-col md:flex-row gap-5 relative">
+          <div className="relative w-[1200px] m-auto">
             <img
               src={`https://${contractInfo.info}.ipfs.dweb.link/${image.name}`}
               alt="design"
               onClick={onImageClick}
-              className="w-[800px] h-[1000px] border border-white object-fit"
+              className="w-[1200px] h-[700px] border border-white object-fit"
             />
             {comments.map((comment, index) => (
               <div
@@ -219,43 +229,74 @@ const Post = ({
                   top: `${comment.y * 100}%`,
                   left: `${comment.x * 100}%`,
                 }}
-                className="absolute bg-white p-2 rounded text-black"
+                className="flex border border-black absolute bg-white p-2 rounded text-black"
               >
-                {comment.text}
+                <NextImage
+                  src={ProfileImage}
+                  className="rounded-[50%] transition-transform duration-300 ease-in-out transform scale-100 hover:scale-0"
+                  alt="profile-image"
+                  width={25}
+                  height={25}
+                />
+                <div className="opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                  {comment.text}
+                </div>
               </div>
             ))}
           </div>
-          <div className="flex flex-grow gap-5 flex-col border text-center border-white">
-            <h1 className="uppercase font-[600] border border-white">
-              comments
-            </h1>
-            <div className="flex flex-col gap-5 px-5">
+          <div className="flex flex-grow gap-20 flex-col justify-start items-start text-center">
+            <div className="flex flex-col justify-start items-start w-full">
+              <h1>Title: {info.content.title}</h1>
+              <h1>Description: {info.content.description}</h1>
+              <h1>Reward: {info.content.reward}</h1>
+            </div>
+            <div className="flex justify-start items-start flex-col gap-5 w-full">
+              <h1 className="uppercase font-[600]">comments</h1>
               {comments.map((comment, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between align-center bg-gray-600 p-2 rounded text-white"
+                  className="flex flex-col w-full items-start justify-between align-center bg-gray-600 p-2 rounded text-white"
                 >
-                  <div className="flex border gap-10">
-                    <h1>{comment.text}</h1>
-                    <h1>Votos: {comment.upVotes}</h1>
+                  <div className="flex flex-row w-full items-center justify-start gap-5">
+                    <div className="flex flex-col">
+                      <RiArrowUpSLine
+                        size={35}
+                        color="white"
+                        className="cursor-pointer"
+                        onClick={() =>
+                          handleClickToVote(comment.reviewId)
+                        }
+                      />
+                      <h1>100</h1>
+                    </div>
+                    <div className="flex flex-row items-center justify-start">
+                      <NextImage
+                        src={ProfileImage}
+                        className="rounded-[50%]"
+                        alt="profile-image"
+                        width={25}
+                        height={25}
+                      />
+                      <h1 className="ml-[5px]">
+                        {truncateAddress(comment.reviewer)}
+                      </h1>
+                    </div>
                   </div>
-                  <button
-                    className="border border-white rounded px-2"
-                    onClick={() =>
-                      handleClickToVote(comment.reviewId)
-                    }
-                  >
-                    VOTE
-                  </button>
+                  <div className="flex gap-10 my-5 pl-5">
+                    <h1>{comment.text}</h1>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-        </div> */}
+        </div>
         {activeComment && (
           <form
             onSubmit={onCommentSubmit}
-            style={{ top: activeComment.y, left: activeComment.x }}
+            style={{
+              top: `${activeComment.y}px`,
+              left: `${activeComment.x}px`,
+            }}
             className="absolute bg-white p-2 rounded text-black"
           >
             <textarea
@@ -315,8 +356,6 @@ export const getServerSideProps: GetServerSideProps = async (
     const imageObj = getContentResponse.data.find(
       (item: any) => item.name !== "postInfo"
     );
-
-    console.log(reviewsResponse);
 
     return {
       props: {

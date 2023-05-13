@@ -16,6 +16,8 @@ export default async function handler(
       },
     });
 
+    console.log(data);
+
     if (error) {
       res.status(404).json({ error: "An error occurred" });
     }

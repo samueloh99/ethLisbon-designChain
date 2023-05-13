@@ -9,8 +9,11 @@ const Header = () => {
   const { isConnected, address } = useAccount();
 
   return (
-    <div className="flex w-full m-auto max-w-5xl items-center justify-between p-5">
-      <h1 className="cursor-pointer" onClick={() => router.push("/")}>
+    <div className="flex w-full text-black items-center justify-between p-5">
+      <h1
+        className="cursor-pointer font-[600] uppercase"
+        onClick={() => router.push("/")}
+      >
         Design Chain
       </h1>
       <div className="flex flex-row gap-5 justify-center items-center">
@@ -28,7 +31,7 @@ const Header = () => {
         )}
 
         <button
-          className="border rounded px-2 py-1"
+          className="bg-btn rounded-[18px] px-5 py-3 font-[600]"
           onClick={() => router.push("/myprofile")}
         >
           My Profile

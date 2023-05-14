@@ -1,14 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DesignChain_IntegratingApe {
-    ERC20 public token;
-
-    constructor(ERC20 _token) {
-        token = _token;
-    }
+    IERC20 public apeToken;
 
     struct User {
         address userAddress;
@@ -44,7 +40,6 @@ contract DesignChain_IntegratingApe {
         string info,
         uint256 reward
     );
-
     event ReviewCreated(
         uint256 reviewId,
         address reviewer,
@@ -53,7 +48,8 @@ contract DesignChain_IntegratingApe {
         uint256 posX,
         uint256 posY
     );
-    event ReviewUpvoted(uint256 reviewId, address voter);
+    event ReviewUpvoted(uint256 reviewId, address voter, uint256 upVotes);
+
     event RewardClaimed(
         uint256 indexed designId,
         uint256 indexed reviewId,
@@ -76,14 +72,18 @@ contract DesignChain_IntegratingApe {
     uint256 public designCounter;
     uint256 public reviewCounter;
 
+    constructor(address _apeTokenAddress) {
+        apeToken = IERC20(_apeTokenAddress);
+    }
+
     function createDesign(string memory _info, uint256 _reward) public {
         require(
-            token.allowance(msg.sender, address(this)) >= _reward,
-            "Token allowance too small."
+            apeToken.balanceOf(msg.sender) >= _reward,
+            "Insufficient balance."
         );
 
-        // Transfer the token reward from the user to the contract
-        token.transferFrom(msg.sender, address(this), _reward);
+        // reminder: first you need to approve the contract to transfer the tokens
+        apeToken.transferFrom(msg.sender, address(this), _reward);
 
         designCounter++;
 
@@ -169,7 +169,8 @@ contract DesignChain_IntegratingApe {
         // Mark that the user has voted for this review
         userUpVotes[_reviewId][msg.sender] = true;
 
-        emit ReviewUpvoted(_reviewId, msg.sender);
+        // Emit ReviewUpvoted event with updated upVotes count
+        emit ReviewUpvoted(_reviewId, msg.sender, reviews[_reviewId].upVotes);
     }
 
     function claimReward(uint256 _designId) public {
@@ -214,10 +215,7 @@ contract DesignChain_IntegratingApe {
         );
 
         uint256 rewardAmount = design.reward / 5;
-        // payable(msg.sender).transfer(rewardAmount);
-
-        // Transfer the token reward from the contract to the user
-        token.transfer(msg.sender, rewardAmount);
+        apeToken.transfer(msg.sender, rewardAmount);
 
         // Decrease the remaining reward in the design
         design.reward -= rewardAmount;

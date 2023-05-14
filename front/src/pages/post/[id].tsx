@@ -22,7 +22,7 @@ import truncateAddress from "../../helpers/truncateAddress";
 interface Comment {
   x: number;
   y: number;
-  upVotes: string;
+  votes: string;
   text: string;
   reviewId: string;
   reviewer: string;
@@ -52,6 +52,7 @@ interface PropsServerSide {
     id: string;
     reviewId: string;
     upVotes: string;
+    votes: string;
     reviewer: string;
     designId: string;
     posX: string;
@@ -96,7 +97,7 @@ const Post = ({
       return {
         text: item.comment,
         x: posX,
-        upVotes: item.upVotes,
+        votes: item.votes,
         reviewId: item.reviewId,
         reviewer: item.reviewer,
         y: posY,
@@ -132,7 +133,7 @@ const Post = ({
       y,
       text: "",
       reviewId: "",
-      upVotes: "",
+      votes: "",
       reviewer: "",
     });
   };
@@ -196,7 +197,7 @@ const Post = ({
 
     try {
       // // Call your contract function
-      const result = await contract.upvoreviewsteReview(id);
+      const result = await contract.upvoteReview(id);
 
       if (result.data) {
         return setIsLoading(false);
@@ -229,17 +230,17 @@ const Post = ({
                   top: `${comment.y * 100}%`,
                   left: `${comment.x * 100}%`,
                 }}
-                className="flex border border-black absolute bg-white p-2 rounded text-black"
+                className="group flex items-center border border-black absolute bg-white p-2 rounded text-black transition-all duration-500 ease-in-out w-12 h-12 hover:w-[250px] overflow-hidden"
               >
                 <NextImage
                   src={ProfileImage}
-                  className="rounded-[50%] transition-transform duration-300 ease-in-out transform scale-100 hover:scale-0"
+                  className="rounded-[50%]"
                   alt="profile-image"
                   width={25}
                   height={25}
                 />
-                <div className="opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                  {comment.text}
+                <div className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out">
+                  <h1>{comment.text}</h1>
                 </div>
               </div>
             ))}
@@ -267,7 +268,7 @@ const Post = ({
                           handleClickToVote(comment.reviewId)
                         }
                       />
-                      <h1>100</h1>
+                      <h1>{comment.votes}</h1>
                     </div>
                     <div className="flex flex-row items-center justify-start">
                       <NextImage
@@ -344,6 +345,8 @@ export const getServerSideProps: GetServerSideProps = async (
       }
     );
 
+    console.log(reviewsResponse);
+
     const postInfoObject = getContentResponse.data.find(
       (item: any) => item.name === "postInfo"
     );
@@ -362,7 +365,7 @@ export const getServerSideProps: GetServerSideProps = async (
         info: newObj,
         image: imageObj,
         contractInfo: graphResponse.designCreated,
-        reviews: reviewsResponse.reviewCreateds,
+        reviews: reviewsResponse,
       },
     };
   } catch (err) {

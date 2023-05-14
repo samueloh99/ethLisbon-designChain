@@ -1,55 +1,130 @@
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
-import { setCookie, parseCookies } from "nookies";
+import NextImage from "next/image";
+import { useRouter } from "next/router";
 
-import { IDKitWidget } from "@worldcoin/idkit";
-import type { ISuccessResult } from "@worldcoin/idkit";
 import { SignInWithLens } from "@lens-protocol/widgets-react";
+
+import { BiExit } from "react-icons/bi";
+
+import { destroyCookie } from "nookies";
+
+import ProfileImage from "../../public/profile.jpeg";
+import { useUserAuthenticationContext } from "../context/UserAuthenticationContext";
 
 const Header = dynamic(() => import("../components/Header"), {
   ssr: false,
 });
 
 export default function Signup() {
-  const [lensConnected, setLensConnected] = useState(false);
-  const cookies = parseCookies();
+  const router = useRouter();
+  const { lensConnected, onSignIn, lensProfile } =
+    useUserAuthenticationContext();
 
-  useEffect(() => {
-    const lensIsConnected = cookies["lens-profile"] !== undefined;
+  const handleClickDisconnect = () => {
+    const shouldDisconnect = window.confirm(
+      "Are you sure you want to disconnect?"
+    );
 
-    setLensConnected(lensIsConnected);
-  }, []);
-
-  async function onSignIn(tokens: any, profile: any) {
-    console.log("tokens: ", tokens);
-    console.log("profile: ", profile);
-
-    if (profile === undefined) return;
-
-    const lensProfile = JSON.stringify(profile);
-
-    setCookie(null, "lens-profile", lensProfile, {
-      maxAge: 3600,
-      path: "/",
-    });
-  }
-
-  const handleProof = useCallback((result: ISuccessResult) => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => resolve(), 3000);
-      // NOTE: Example of how to decline the verification request and show an error message to the user
-    });
-  }, []);
-
-  const onSuccess = async (result: ISuccessResult) => {
-    console.log("resultssss", result);
+    if (shouldDisconnect) {
+      localStorage.clear();
+      sessionStorage.clear();
+      destroyCookie(null, "lens-profile", { path: "/" });
+      router.push("/");
+    }
   };
+
+  if (lensProfile !== undefined) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-between">
+        <Header />
+        <div className="flex relative flex-col gap-10 w-full h-full flex-grow justify-center items-center">
+          <div
+            className="cursor-pointer absolute z-[12] top-10 right-10"
+            onClick={() => handleClickDisconnect()}
+          >
+            <BiExit size={40} color="black" />
+          </div>
+          <div className="flex z-[11] h-full w-full flex-grow flex-col gap-2 justify-center items-center">
+            <div className="flex gap-5 flex-col h-[450px] justify-end items-center align-end">
+              <NextImage
+                src={ProfileImage}
+                className="rounded-[50%]"
+                alt="profile-image"
+                width={200}
+                height={200}
+              />
+              <div className="flex text-center h-auto mb-10 flex-col ">
+                <h1 className="text-[24px] font-[600]">
+                  @{lensProfile.handle}
+                </h1>
+                <h1 className="text-[18px] font-[400]">
+                  {lensProfile.id}
+                </h1>
+              </div>
+            </div>
+            <div className="flex flex-grow gap-5 grid grid-cols-2 w-full pb-10 px-10 md:px-0 md:w-[500px] align-center justify-center items-center h-3/6">
+              <div className="shadow-xl w-full flex flex-col p-3 text-center gap-2 rounded-[10px]">
+                <h1 className="uppercase text-[12px] font-[600]">
+                  Total Followers
+                </h1>
+                <h1 className="uppercase text-[14px] font-[600]">
+                  {lensProfile.stats.totalFollowers}
+                </h1>
+              </div>
+              <div className="shadow-xl w-full flex flex-col p-3 text-center gap-2 rounded-[10px]">
+                <h1 className="uppercase text-[12px] font-[600]">
+                  Total Following
+                </h1>
+                <h1 className="uppercase text-[14px] font-[600]">
+                  {lensProfile.stats.totalFollowing}
+                </h1>
+              </div>
+              <div className="shadow-xl w-full flex flex-col p-3 text-center gap-2 rounded-[10px]">
+                <h1 className="uppercase text-[12px] font-[600]">
+                  Total Comments
+                </h1>
+                <h1 className="uppercase text-[14px] font-[600]">
+                  {lensProfile.stats.totalComments}
+                </h1>
+              </div>
+              <div className="shadow-xl w-full flex flex-col p-3 text-center gap-2 rounded-[10px]">
+                <h1 className="uppercase text-[12px] font-[600]">
+                  Total Posts
+                </h1>
+                <h1 className="uppercase text-[14px] font-[600]">
+                  {lensProfile.stats.totalPosts}
+                </h1>
+              </div>
+              <div className="shadow-xl w-full flex flex-col p-3 text-center gap-2 rounded-[10px]">
+                <h1 className="uppercase text-[12px] font-[600]">
+                  Total Publications
+                </h1>
+                <h1 className="uppercase text-[14px] font-[600]">
+                  {lensProfile.stats.totalPublications}
+                </h1>
+              </div>{" "}
+              <div className="shadow-xl w-full flex flex-col p-3 text-center gap-2 rounded-[10px]">
+                <h1 className="uppercase text-[12px] font-[600]">
+                  Total Collects
+                </h1>
+                <h1 className="uppercase text-[14px] font-[600]">
+                  {lensProfile.stats.totalCollects}
+                </h1>
+              </div>
+            </div>
+          </div>
+          <div className="absolute w-full h-[50%] top-0 bg-white z-[10] rounded-b-[100%] overflow-hidden"></div>
+          <div className="absolute w-full h-full bg-btn z-[9] overflow-hidden"></div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <Header />
-      <div className="flex flex-col gap-10 w-full h-full border border-white flex-grow justify-center items-center">
-        <div className="flex border border-white flex-col gap-2 justify-center items-center">
+      <div className="flex flex-col gap-10 w-full h-full flex-grow justify-center items-center">
+        <div className="flex flex-col gap-2 justify-center items-center">
           <h1 className="uppercase font-[600]">
             1. Connect to Lens Profile
           </h1>
@@ -61,20 +136,6 @@ export default function Signup() {
           ) : (
             <SignInWithLens onSignIn={onSignIn} />
           )}
-        </div>
-        <div className="flex border border-white flex-col gap-2 justify-center items-center">
-          <h1 className="uppercase font-[600]">
-            2. Verify in Worldcoin
-          </h1>
-          <IDKitWidget
-            action="my_action"
-            onSuccess={onSuccess}
-            handleVerify={handleProof}
-            app_id="app_8dbb8a1c2454a71d3cb609e70322e485"
-            // walletConnectProjectId="get_this_from_walletconnect_portal"
-          >
-            {({ open }) => <button onClick={open}>Click me</button>}
-          </IDKitWidget>
         </div>
       </div>
     </main>

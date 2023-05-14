@@ -7,6 +7,7 @@ import { ethers, Contract, Signer } from "ethers";
 import { useSigner } from "wagmi";
 
 import { abi } from "../../../abi/abi.json";
+import { abi as apeAbi } from "../../../abi/apeAbi.json";
 import { useAccount } from "wagmi";
 
 interface ModalProps {
@@ -23,6 +24,8 @@ function makeStorageClient() {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const { address } = useAccount();
   const { data } = useSigner();
+
+  const [apeCoinValidated, setApeCoinValidated] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -94,13 +97,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       data as Signer
     );
 
-    const amountMATIC = ethers.utils.parseEther(form.reward);
+    const amountApeToken = ethers.utils.parseUnits(form.reward, 18); // change the number of decimals accordingly
 
     try {
       // // Call your contract function
-      const result = await contract.createDesign(cid, amountMATIC, {
-        value: amountMATIC,
-      });
+      const result = await contract.createDesign(cid, amountApeToken);
       console.log("Function result:", result);
       setForm({
         description: "",
@@ -124,6 +125,54 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleClickApproveApe = async () => {
+    console.log("APPROVE APE");
+    const contract = new Contract(
+      "0x9C0BAB447CBF9F86C8800f566448C373a144f47f",
+      apeAbi,
+      data as Signer
+    );
+
+    try {
+      const result = await contract.allowance(
+        address,
+        process.env.NEXT_PUBLIC_CONTRACTADDRESS as string
+      );
+
+      const transformed = ethers.BigNumber.from(result._hex);
+      const num = Number(transformed.toString());
+
+      if (num === 0) {
+        const amountMATIC = ethers.utils.parseEther(form.reward);
+        const result = await contract.approve(
+          process.env.NEXT_PUBLIC_CONTRACTADDRESS as string,
+          amountMATIC
+        );
+        console.log("Function result:", result);
+        return setApeCoinValidated(true);
+      }
+
+      if (num > Number(form.reward)) {
+        return setApeCoinValidated(true);
+      }
+
+      const calculatedAmount = Number(form.reward) - num;
+
+      const amountMATIC = ethers.utils.parseEther(
+        String(calculatedAmount)
+      );
+      const resultApprove = await contract.approve(
+        process.env.NEXT_PUBLIC_CONTRACTADDRESS as string,
+        amountMATIC
+      );
+      console.log("Function result:", resultApprove);
+      return setApeCoinValidated(true);
+    } catch (err) {
+      // setApeCoinValidated(false);
+      console.error("Error calling the contract function:", err);
+    }
+  };
+
   return (
     <div
       className={`fixed z-10 inset-0 overflow-y-auto transition-opacity duration-300 ${
@@ -140,7 +189,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           {status.isLoading ? (
             <div className="flex w-full p-10 relative">
               <div className="p-6 h-full w-full flex flex-col text-black justify-center items-center">
-                <h1>Loading</h1>
+                <h1>Deploying</h1>
               </div>
             </div>
           ) : (
@@ -204,12 +253,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           )}
-          <button
-            className="bg-btn mb-10 rounded-[18px] px-5 py-3 font-[600]"
-            onClick={() => handleUpload()}
-          >
-            UPLOAD
-          </button>
+          {apeCoinValidated ? (
+            <button
+              className="bg-btn mb-10 rounded-[18px] px-5 py-3 font-[600]"
+              onClick={() => handleUpload()}
+            >
+              UPLOAD
+            </button>
+          ) : (
+            <button
+              className="bg-btn mb-10 rounded-[18px] px-5 py-3 font-[600]"
+              onClick={() => handleClickApproveApe()}
+            >
+              APPROVE APE
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -217,3 +275,5 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 };
 
 export default Modal;
+
+/// in order to depoist ape, you need to approve this contract.

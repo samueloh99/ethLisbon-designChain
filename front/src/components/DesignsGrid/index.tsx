@@ -14,7 +14,12 @@ const DesignGrid = () => {
       if (response.status !== 200) return setMyDesigns([]);
 
       if (response.data.designCreateds.length > 0) {
-        const designsPromises = response.data.designCreateds.map(
+        const filteredData = response.data.designCreateds.filter(
+          (design: any) =>
+            design.id !==
+            "0xb5389cda5602db42787d78f2a27be0222e997120ea31f03f4d74294b31d0767b3c000000"
+        );
+        const designsPromises = filteredData.map(
           async (design: any) => {
             const { data } = await axios.post(`/api/getContent`, {
               cid: design.info,

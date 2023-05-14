@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
+import { SignInWithLens } from "@lens-protocol/widgets-react";
 
 import UploadDesign from "../components/UploadDesign";
 import DesignGrid from "../components/DesignsGrid";
@@ -11,10 +12,9 @@ const Header = dynamic(() => import("../components/Header"), {
 });
 
 export default function Home() {
-  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { lensConnected } = useUserAuthenticationContext();
+  const { lensConnected, onSignIn } = useUserAuthenticationContext();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -29,16 +29,9 @@ export default function Home() {
               Upload Design
             </button>
           ) : (
-            <h1>
+            <h1 className="flex gap-3 flex-col">
               To Upload your design <br />
-              Go to{"  "}
-              <strong
-                className="cursor-pointer underline"
-                onClick={() => router.push("/myprofile")}
-              >
-                My Profile{"  "}
-              </strong>
-              and SignIn on Lens
+              <SignInWithLens onSignIn={onSignIn} />
             </h1>
           )}
         </div>

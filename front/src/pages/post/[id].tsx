@@ -126,8 +126,9 @@ const Post = ({
     event: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left; // absolute x position
-    const y = event.clientY - rect.top; // absolute y position
+    const x = (event.clientX - rect.left) / rect.width; // x position in percentage
+    const y = (event.clientY - rect.top) / rect.height; // y position in percentage
+
     setActiveComment({
       x,
       y,
@@ -216,13 +217,35 @@ const Post = ({
       <Header />
       <div className="flex flex-col gap-5 h-full w-full relative justify-center px-5 py-10">
         <div className="flex w-full flex-col md:flex-row gap-5 relative">
-          <div className="relative w-[1200px] m-auto">
+          <div className="relative w-[1200px] flex-grow h-[700px] mb-auto">
             <img
               src={`https://${contractInfo.info}.ipfs.dweb.link/${image.name}`}
               alt="design"
               onClick={onImageClick}
               className="w-[1200px] h-[700px] border border-white object-fit"
             />
+            {activeComment && (
+              <form
+                onSubmit={onCommentSubmit}
+                style={{
+                  top: `${activeComment.y * 100}%`,
+                  left: `${activeComment.x * 100}%`,
+                }}
+                className="absolute bg-white p-2 rounded text-black"
+              >
+                <textarea
+                  onChange={onCommentChange}
+                  value={activeComment.text}
+                  className="resize-none"
+                />
+                <button
+                  type="submit"
+                  className="mt-2 block w-full bg-blue-500 text-white rounded p-2"
+                >
+                  Submit
+                </button>
+              </form>
+            )}
             {comments.map((comment, index) => (
               <div
                 key={index}
@@ -230,7 +253,7 @@ const Post = ({
                   top: `${comment.y * 100}%`,
                   left: `${comment.x * 100}%`,
                 }}
-                className="group flex items-center border border-black absolute bg-white p-2 rounded text-black transition-all duration-500 ease-in-out w-12 h-12 hover:w-[250px] overflow-hidden"
+                className="group z-[100] border border-black flex items-center border border-black absolute bg-white p-2 rounded text-black transition-all duration-500 ease-in-out w-12 h-12 hover:w-[250px] overflow-hidden"
               >
                 <NextImage
                   src={ProfileImage}
@@ -291,28 +314,6 @@ const Post = ({
             </div>
           </div>
         </div>
-        {activeComment && (
-          <form
-            onSubmit={onCommentSubmit}
-            style={{
-              top: `${activeComment.y}px`,
-              left: `${activeComment.x}px`,
-            }}
-            className="absolute bg-white p-2 rounded text-black"
-          >
-            <textarea
-              onChange={onCommentChange}
-              value={activeComment.text}
-              className="resize-none"
-            />
-            <button
-              type="submit"
-              className="mt-2 block w-full bg-blue-500 text-white rounded p-2"
-            >
-              Submit
-            </button>
-          </form>
-        )}
       </div>
     </div>
   );

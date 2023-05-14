@@ -9,9 +9,11 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { polygonMumbai } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
-import { LensConfig, development } from "@lens-protocol/react-web";
-import { bindings as wagmiBindings } from "@lens-protocol/wagmi";
-import { LensProvider } from "@lens-protocol/react-web";
+// import { LensConfig, development } from "@lens-protocol/react-web";
+// import { bindings as wagmiBindings } from "@lens-protocol/wagmi";
+// import { LensProvider } from "@lens-protocol/react-web";
+
+import { UserAuthenticationProvider } from "../../src/context/UserAuthenticationContext";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [polygonMumbai],
@@ -37,11 +39,13 @@ const wagmiClient = createClient({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     // <LensProvider config={lensConfig}>
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains}>
-        <Component {...pageProps} />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <UserAuthenticationProvider>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains}>
+          <Component {...pageProps} />
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </UserAuthenticationProvider>
     // </LensProvider>
   );
 }

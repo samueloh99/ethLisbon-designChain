@@ -44,7 +44,8 @@ contract DesignChain {
         uint256 posX,
         uint256 posY
     );
-    event ReviewUpvoted(uint256 reviewId, address voter);
+    event ReviewUpvoted(uint256 reviewId, address voter, uint256 upVotes);
+
     event RewardClaimed(
         uint256 indexed designId,
         uint256 indexed reviewId,
@@ -154,7 +155,8 @@ contract DesignChain {
         // Mark that the user has voted for this review
         userUpVotes[_reviewId][msg.sender] = true;
 
-        emit ReviewUpvoted(_reviewId, msg.sender);
+        // Emit ReviewUpvoted event with updated upVotes count
+        emit ReviewUpvoted(_reviewId, msg.sender, reviews[_reviewId].upVotes);
     }
 
     function claimReward(uint256 _designId) public {

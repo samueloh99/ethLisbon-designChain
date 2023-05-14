@@ -1,0 +1,418 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_apeTokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "designId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "info",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      }
+    ],
+    "name": "DesignCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "reviewer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "designId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "comment",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "posX",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "posY",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReviewCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "upVotes",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReviewUpvoted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "designId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "reviewer",
+        "type": "address"
+      }
+    ],
+    "name": "RewardClaimed",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "apeToken",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_designId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_info",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_reward",
+        "type": "uint256"
+      }
+    ],
+    "name": "createDesign",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_designId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_comment",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_posX",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_posY",
+        "type": "uint256"
+      }
+    ],
+    "name": "createReview",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "designCounter",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "designs",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "info",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reviewCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isCompleted",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_designId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getReviewIds",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reviewCounter",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "reviews",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "reviewer",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "designId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "comment",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "posX",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "posY",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isRewarded",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "upVotes",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_reviewId",
+        "type": "uint256"
+      }
+    ],
+    "name": "upvoteReview",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userUpVotes",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "users",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalRequests",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalReviews",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

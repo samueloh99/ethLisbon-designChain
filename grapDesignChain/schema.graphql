@@ -1,0 +1,43 @@
+type DesignCreated @entity(immutable: true) {
+  id: Bytes!
+  designId: BigInt! # uint256
+  owner: Bytes! # address
+  info: String! # string
+  reward: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ReviewCreated @entity(immutable: true) {
+  id: Bytes!
+  reviewId: BigInt! # uint256
+  reviewer: Bytes! # address
+  designId: BigInt! # uint256
+  comment: String! # string
+  posX: BigInt! # uint256
+  posY: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ReviewUpvoted @entity(immutable: true) {
+  id: Bytes!
+  reviewId: BigInt! # uint256
+  voter: Bytes! # address
+  upVotes: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RewardClaimed @entity(immutable: true) {
+  id: Bytes!
+  designId: BigInt! # uint256
+  reviewId: BigInt! # uint256
+  reviewer: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

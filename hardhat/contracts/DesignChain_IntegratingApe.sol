@@ -2,8 +2,11 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// AutomationCompatible.sol imports the functions from both ./AutomationBase.sol and
+// ./interfaces/AutomationCompatibleInterface.sol
+import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
 
-contract DesignChain_IntegratingApe {
+contract DesignChain_IntegratingApe is AutomationCompatibleInterface {
     IERC20 public apeToken;
 
     struct User {
@@ -112,7 +115,7 @@ contract DesignChain_IntegratingApe {
             msg.sender,
             _info,
             _reward,
-            design.createdTime
+            designs[designCounter].createdTime
         );
     }
 
@@ -245,4 +248,62 @@ contract DesignChain_IntegratingApe {
             design.isCompleted = true;
         }
     }
+
+    /**
+     * @notice This function is used to find the first eligible design ID for reward distribution.
+     * An eligible design is one that is not yet completed and was created at least 10 days ago.
+     * This function will iterate through all the designs and return the ID of the first design
+     * that fulfills the eligibility criteria.
+     * @return The ID of the eligible design.
+     * @dev The function reverts if no eligible design is found.
+     */
+    function getEligibleDesignId() public view returns (uint256) {
+        uint256 currentTime = block.timestamp;
+
+        for (uint256 i = 1; i <= designCounter; i++) {
+            PostDesign storage design = designs[i];
+            if (
+                !design.isCompleted &&
+                currentTime >= design.createdTime + 10 days
+            ) {
+                return i;
+            }
+        }
+
+        revert("No eligible design found.");
+    }
+
+    /**
+     * @notice This function checks if there is an eligible design ID for reward distribution.
+     * @dev It calls the getEligibleDesignId() function and returns true if there is an eligible design, false otherwise.
+     * @return A boolean indicating if there is an eligible design.
+     */
+    function isEligibleDesignAvailable() public view returns (bool) {
+        try this.getEligibleDesignId() {
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    // Chainlink Implementation
+    function checkUpkeep(
+        bytes calldata /* checkData */
+    )
+        external
+        view
+        override
+        returns (bool upkeepNeeded, bytes memory /* performData */)
+    {
+        upkeepNeeded = isEligibleDesignAvailable();
+    }
+
+    function performUpkeep(bytes calldata /* performData */) external override {
+        // the function reverts if no eligible design is found.
+        uint256 eligibleDesigId = getEligibleDesignId();
+
+        distributeReward(eligibleDesigId);
+    }
 }
+//deploy:
+//polygon: https://mumbai.polygonscan.com/address/0xf9f8eC75919f7E6F5179a802537111233E0d7B1e#code

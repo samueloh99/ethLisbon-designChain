@@ -20,6 +20,7 @@ contract DesignChain_IntegratingApe {
         uint256 reviewCount; // number of reviews received
         bool isCompleted; // flag to indicate if feedback reward is completed
         uint256[] reviewIds; // array to store review IDs for this design
+        uint256 createdTime; // timestamp of when the design was created
     }
 
     struct ReviewDesign {
@@ -38,8 +39,10 @@ contract DesignChain_IntegratingApe {
         uint256 designId,
         address owner,
         string info,
-        uint256 reward
+        uint256 reward,
+        uint256 createdTime
     );
+
     event ReviewCreated(
         uint256 reviewId,
         address reviewer,
@@ -100,10 +103,17 @@ contract DesignChain_IntegratingApe {
             _reward,
             0,
             false,
-            new uint256[](0)
+            new uint256[](0),
+            block.timestamp
         );
 
-        emit DesignCreated(designCounter, msg.sender, _info, _reward);
+        emit DesignCreated(
+            designCounter,
+            msg.sender,
+            _info,
+            _reward,
+            design.createdTime
+        );
     }
 
     function createReview(
@@ -173,8 +183,18 @@ contract DesignChain_IntegratingApe {
         emit ReviewUpvoted(_reviewId, msg.sender, reviews[_reviewId].upVotes);
     }
 
-    function claimReward(uint256 _designId) public {
+    /**
+     * @notice Distribute the rewards to the top 5 reviewers of a design
+     * @dev The distribution can only happen 10 days after the design was posted and if the reward has not already been distributed.
+     * This function can be called by anyone.
+     * @param _designId The id of the design for which the reward should be distributed
+     */
+    function distributeReward(uint256 _designId) public {
         PostDesign storage design = designs[_designId];
+        require(
+            block.timestamp >= design.createdTime + 10 days,
+            "Design feedback reward can only be distributed after 10 days."
+        );
         require(
             !design.isCompleted,
             "Rewards have already been claimed for this design."
@@ -197,31 +217,21 @@ contract DesignChain_IntegratingApe {
             }
         }
 
-        uint256 userReviewPosition = 6; // Position outside of the top 5
+        uint256 rewardAmount = design.reward / 5;
         for (uint256 i = 0; i < 5; i++) {
-            if (reviews[topReviews[i]].reviewer == msg.sender) {
-                userReviewPosition = i;
-                break;
+            if (!reviews[topReviews[i]].isRewarded) {
+                apeToken.transfer(
+                    reviews[topReviews[i]].reviewer,
+                    rewardAmount
+                );
+
+                // Decrease the remaining reward in the design
+                design.reward -= rewardAmount;
+
+                // Mark the review as rewarded
+                reviews[topReviews[i]].isRewarded = true;
             }
         }
-
-        require(
-            userReviewPosition < 5,
-            "The user is not among the top 5 reviewers."
-        );
-        require(
-            !reviews[topReviews[userReviewPosition]].isRewarded,
-            "The user has already claimed the reward."
-        );
-
-        uint256 rewardAmount = design.reward / 5;
-        apeToken.transfer(msg.sender, rewardAmount);
-
-        // Decrease the remaining reward in the design
-        design.reward -= rewardAmount;
-
-        // Mark the review as rewarded
-        reviews[topReviews[userReviewPosition]].isRewarded = true;
 
         bool allRewardsClaimed = true;
         for (uint256 i = 0; i < 5; i++) {
@@ -234,11 +244,5 @@ contract DesignChain_IntegratingApe {
         if (allRewardsClaimed) {
             design.isCompleted = true;
         }
-
-        emit RewardClaimed(
-            _designId,
-            reviews[topReviews[userReviewPosition]].id,
-            msg.sender
-        );
     }
 }

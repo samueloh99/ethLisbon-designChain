@@ -16,6 +16,7 @@ contract DesignChain {
         uint256 reviewCount; // number of reviews received
         bool isCompleted; // flag to indicate if feedback reward is completed
         uint256[] reviewIds; // array to store review IDs for this design
+        uint256 createdTime; // timestamp of when the design was created
     }
 
     struct ReviewDesign {
@@ -34,7 +35,8 @@ contract DesignChain {
         uint256 designId,
         address owner,
         string info,
-        uint256 reward
+        uint256 reward,
+        uint256 createdTime
     );
     event ReviewCreated(
         uint256 reviewId,
@@ -46,7 +48,7 @@ contract DesignChain {
     );
     event ReviewUpvoted(uint256 reviewId, address voter, uint256 upVotes);
 
-    event RewardClaimed(
+    event RewardDistributed(
         uint256 indexed designId,
         uint256 indexed reviewId,
         address indexed reviewer
@@ -86,10 +88,17 @@ contract DesignChain {
             _reward,
             0,
             false,
-            new uint256[](0)
+            new uint256[](0),
+            block.timestamp
         );
 
-        emit DesignCreated(designCounter, msg.sender, _info, _reward);
+        emit DesignCreated(
+            designCounter,
+            msg.sender,
+            _info,
+            _reward,
+            designs[designCounter].createdTime
+        );
     }
 
     function createReview(
@@ -159,11 +168,15 @@ contract DesignChain {
         emit ReviewUpvoted(_reviewId, msg.sender, reviews[_reviewId].upVotes);
     }
 
-    function claimReward(uint256 _designId) public {
+    function distributeReward(uint256 _designId) public {
         PostDesign storage design = designs[_designId];
         require(
             !design.isCompleted,
-            "Rewards have already been claimed for this design."
+            "Rewards have already been distributed for this design."
+        );
+        require(
+            block.timestamp >= design.createdTime + 10 days,
+            "Reward can only be distributed after 10 days of the design creation."
         );
         require(design.reward > 0, "Reward amount must be greater than zero.");
 
@@ -183,48 +196,27 @@ contract DesignChain {
             }
         }
 
-        uint256 userReviewPosition = 6; // Position outside of the top 5
-        for (uint256 i = 0; i < 5; i++) {
-            if (reviews[topReviews[i]].reviewer == msg.sender) {
-                userReviewPosition = i;
-                break;
-            }
-        }
-
-        require(
-            userReviewPosition < 5,
-            "The user is not among the top 5 reviewers."
-        );
-        require(
-            !reviews[topReviews[userReviewPosition]].isRewarded,
-            "The user has already claimed the reward."
-        );
-
         uint256 rewardAmount = design.reward / 5;
-        payable(msg.sender).transfer(rewardAmount);
-
-        // Decrease the remaining reward in the design
-        design.reward -= rewardAmount;
-
-        // Mark the review as rewarded
-        reviews[topReviews[userReviewPosition]].isRewarded = true;
-
-        bool allRewardsClaimed = true;
         for (uint256 i = 0; i < 5; i++) {
-            if (!reviews[topReviews[i]].isRewarded) {
-                allRewardsClaimed = false;
-                break;
+            if (reviews[topReviews[i]].isRewarded) {
+                continue;
             }
+
+            payable(reviews[topReviews[i]].reviewer).transfer(rewardAmount);
+
+            // Decrease the remaining reward in the design
+            design.reward -= rewardAmount;
+
+            // Mark the review as rewarded
+            reviews[topReviews[i]].isRewarded = true;
+
+            emit RewardDistributed(
+                _designId,
+                reviews[topReviews[i]].id,
+                reviews[topReviews[i]].reviewer
+            );
         }
 
-        if (allRewardsClaimed) {
-            design.isCompleted = true;
-        }
-
-        emit RewardClaimed(
-            _designId,
-            reviews[topReviews[userReviewPosition]].id,
-            msg.sender
-        );
+        design.isCompleted = true;
     }
 }

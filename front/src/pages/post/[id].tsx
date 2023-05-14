@@ -326,27 +326,25 @@ export const getServerSideProps: GetServerSideProps = async (
 
   try {
     const { data: graphResponse } = await axios.post(
-      `http://localhost:3000/api/graphGetDesignById`,
+      `https://eth-lisbon-design-chain-hskr2fs9h-samueloh9.vercel.app/api/graphGetDesignById`,
       {
         id,
       }
     );
 
     const { data: getContentResponse } = await axios.post(
-      `http://localhost:3000/api/getContent`,
+      `https://eth-lisbon-design-chain-hskr2fs9h-samueloh9.vercel.app/api/getContent`,
       {
         cid: graphResponse.designCreated.info,
       }
     );
 
     const { data: reviewsResponse } = await axios.post(
-      `http://localhost:3000/api/graphGetReviewsByDesignId`,
+      `https://eth-lisbon-design-chain-hskr2fs9h-samueloh9.vercel.app/api/graphGetReviewsByDesignId`,
       {
         id: graphResponse.designCreated.designId,
       }
     );
-
-    console.log(reviewsResponse);
 
     const postInfoObject = getContentResponse.data.find(
       (item: any) => item.name === "postInfo"
